@@ -6,7 +6,6 @@ export interface IUser {
   _id: mongoose.Types.ObjectId;
   email: string;
   id: string;
-  role: string;
   streams?: IStream[];
 }
 
@@ -20,15 +19,15 @@ export const userSchema: Schema<IUser> = new Schema<IUser>({
     default: uuidv4(),
     required: true,
   },
-  role: {
-    type: String,
-    enum: ["Streamer", "EndUser"],
-  },
+  // role: {
+  //   type: String,
+  //   enum: ["Streamer", "EndUser"],
+  // },
   streams: {
     type: [streamSchema],
   },
 });
 
-const User = model("User", userSchema);
+const UserModel = model("UserModel", userSchema);
 
-export { User };
+export { UserModel };

@@ -1,14 +1,17 @@
 import mongoose, { Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { IUser, userSchema } from "./user.schema";
+import { Iupvote, upvoteSchema } from "./upvote.schema";
 
 export interface IStream {
   _id: mongoose.Types.ObjectId;
   typeofstream: String;
   active: Boolean;
-  upVotes: Number;
+  extractedid?: String;
+  upVotes?: Number;
   id: String;
-  // user: IUser;
+  userid: String;
+  url?: String;
 }
 
 export const streamSchema = new Schema<IStream>({
@@ -28,9 +31,15 @@ export const streamSchema = new Schema<IStream>({
     type: Number,
     default: 0,
   },
-  // user: {
-  //   type: userSchema,
-  // },
+  extractedid: {
+    type: String,
+  },
+  userid: {
+    type: String,
+  },
+  url: {
+    type: String,
+  },
 });
 const Stream = model("Stream", streamSchema);
 
