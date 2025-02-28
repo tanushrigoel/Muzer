@@ -1,83 +1,93 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { authOptions } from "../auth/[...nextauth]/route";
-import { getServerSession, User } from "next-auth";
 import { dbconnect } from "@/lib/dbconnect";
-import { UserModel } from "@/models/user.schema";
+import UserModel from "@/models/user.schema";
 import { Stream } from "@/models/stream.schema";
-const YT_REGEX = new RegExp(
-  "^(?:https?://)?(?:www.)?(?:youtube.com/(?:watch?v=|embed/|shorts/|playlist?list=)|youtu.be/)([w-]+)"
-);
+import ytdl from "ytdl-core";
 
-const CreateStreamSchema = z.object({
-  creatorId: z.string(),
-  url: z.string().includes("youtube") || z.string().includes("spotify"), // only youtube or spotify allowed
+
+const getSchema = z.object({
+  userid: z.string(),
 });
 
 export async function GET(req: NextRequest) {
   try {
     await dbconnect();
-    const session = await getServerSession(authOptions);
-    const user: User = session?.user as User;
-
-    if (!session || !user) {
-      return NextResponse.json(
-        {
-          message: "User does not exist",
-        },
-        { status: 411 }
-      );
-    }
-
-    const currUser = await UserModel.findOne({ id: user.id });
-    if (!currUser) {
-      return NextResponse.json(
-        {
-          message: "User not found in db",
-        },
-        { status: 411 }
-      );
-    }
-    const userStreams = currUser.streams;
+    const data = req.nextUrl.searchParams.get("userid") ?? "";
+    const streams = await Stream.find({ userid: data });
     return NextResponse.json(
-      {
-        message: "All the streams of the current user found",
-        data: userStreams,
-      },
+      { message: "Streams of the user fetched successfully", data: streams },
       { status: 200 }
     );
+    
+    
   } catch (error) {
-    console.log(error);
-
     return NextResponse.json(
       {
-        message: "Error while adding a stream",
+        message: "Error while fetching the streams",
       },
       { status: 411 }
     );
   }
 }
+const CreateStreamSchema = z.object({
+  userid: z.string(),
+  url: z.string(),
+});
 
 export async function POST(req: NextRequest) {
   try {
+    await dbconnect();
+
     const data = CreateStreamSchema.parse(await req.json());
-    const checkUrl = YT_REGEX.test(data.url);
-    if (!checkUrl) {
+
+    const urlCheck = ytdl.validateURL(data.url);
+
+    if (!urlCheck) {
       return NextResponse.json(
         { error: "URL not of youtube" },
         { status: 404 }
       );
     }
-    const extractedId = data.url.split("?v=");
-    await dbconnect();
+    const videoId = ytdl.getURLVideoID(data.url);
+    const videoInfo = await ytdl.getBasicInfo(data.url);
+    // console.log(videoInfo.videoDetails.thumbnail);
+    const thumb = videoInfo.videoDetails.thumbnails;
+    thumb.sort((a, b) => {
+      return a.width - b.width && a.height - b.height;
+    });
+    // console.log(thumb[thumb.length - 1].url);
 
     await Stream.create({
-      extractedid: extractedId,
-      userid: data.creatorId,
+      extractedid: videoId,
+      userid: data.userid,
       typeofstream: "Youtube",
       url: data.url,
+      title: videoInfo.videoDetails.title,
+      image: thumb[thumb.length - 1].url,
     });
-    
+    await UserModel.findOneAndUpdate(
+      { id: data.userid },
+      {
+        $push: {
+          streams: {
+            extractedid: videoId,
+            userid: data.userid,
+            typeofstream: "Youtube",
+            url: data.url,
+            title: videoInfo.videoDetails.title,
+            image: thumb[thumb.length - 1].url,
+          },
+        },
+      }
+    );
+
+    return NextResponse.json(
+      {
+        message: "Stream added successfully",
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.log(error);
     return NextResponse.json(

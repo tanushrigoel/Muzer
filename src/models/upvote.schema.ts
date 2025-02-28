@@ -1,12 +1,7 @@
 import mongoose, { Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { Iupvote } from "./types";
 
-export interface Iupvote {
-  _id: mongoose.Types.ObjectId;
-  id: String;
-  userid: String;
-  streamid: String;
-}
 
 export const upvoteSchema = new Schema<Iupvote>({
   id: {
@@ -22,4 +17,4 @@ export const upvoteSchema = new Schema<Iupvote>({
   },
 });
 
-export const Upvote = model("Upvote", upvoteSchema);
+export const Upvote = mongoose.models.Upvote || model("Upvote", upvoteSchema);

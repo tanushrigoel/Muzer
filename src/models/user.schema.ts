@@ -1,15 +1,9 @@
 import mongoose, { Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { IStream, streamSchema } from "./stream.schema";
+import { IUser } from "./types"; // Import from new types file
+import { streamSchema } from "./stream.schema"; // Import only after defining the schema
 
-export interface IUser {
-  _id: mongoose.Types.ObjectId;
-  email: string;
-  id: string;
-  streams?: IStream[];
-}
-
-export const userSchema: Schema<IUser> = new Schema<IUser>({
+const userSchema: Schema<IUser> = new Schema<IUser>({
   email: {
     type: String,
     required: true,
@@ -19,15 +13,11 @@ export const userSchema: Schema<IUser> = new Schema<IUser>({
     default: uuidv4(),
     required: true,
   },
-  // role: {
-  //   type: String,
-  //   enum: ["Streamer", "EndUser"],
-  // },
   streams: {
-    type: [streamSchema],
+    type: [streamSchema], // Now properly defined
+    default: [],
   },
 });
 
-const UserModel = model("UserModel", userSchema);
-
-export { UserModel };
+const UserModel = mongoose.models.UserModel || mongoose.model("UserModel", userSchema);
+export default UserModel;

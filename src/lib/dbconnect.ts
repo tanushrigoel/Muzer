@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+// const MONGODB_URI = process.env.MONGODB_URI!;
+// console.log(MONGODB_URI);
 
-if (!MONGODB_URI) {
-  throw new Error("Please define the mongodb string");
-}
+// if (MONGODB_URI.length == 0) {
+//   throw new Error("Please define the mongodb string");
+// }
 
 let cached = global.mongoose;
 
@@ -22,7 +23,7 @@ export async function dbconnect() {
       maxPoolSize: 10,
     };
     cached.promise = mongoose
-      .connect(MONGODB_URI, opts)
+      .connect("mongodb+srv://tanushri:tanushri@cluster0.6onwm.mongodb.net/", opts)
       .then(() => mongoose.connection);
   }
   try {

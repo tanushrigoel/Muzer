@@ -1,18 +1,6 @@
 import mongoose, { Schema, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-import { IUser, userSchema } from "./user.schema";
-import { Iupvote, upvoteSchema } from "./upvote.schema";
-
-export interface IStream {
-  _id: mongoose.Types.ObjectId;
-  typeofstream: String;
-  active: Boolean;
-  extractedid?: String;
-  upVotes?: Number;
-  id: String;
-  userid: String;
-  url?: String;
-}
+import { IStream } from "./types";
 
 export const streamSchema = new Schema<IStream>({
   typeofstream: {
@@ -40,7 +28,16 @@ export const streamSchema = new Schema<IStream>({
   url: {
     type: String,
   },
+  title: {
+    type: String,
+    default: "",
+  },
+  image: {
+    type: String,
+    default: "",
+  },
 });
-const Stream = model("Stream", streamSchema);
+
+const Stream = mongoose.models.Stream || mongoose.model("Stream", streamSchema);
 
 export { Stream };
