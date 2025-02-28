@@ -4,7 +4,8 @@ import { dbconnect } from "@/lib/dbconnect";
 import UserModel from "@/models/user.schema";
 import { Stream } from "@/models/stream.schema";
 import ytdl from "ytdl-core";
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 
 const getSchema = z.object({
   userid: z.string(),
@@ -19,8 +20,6 @@ export async function GET(req: NextRequest) {
       { message: "Streams of the user fetched successfully", data: streams },
       { status: 200 }
     );
-    
-    
   } catch (error) {
     return NextResponse.json(
       {
@@ -31,13 +30,14 @@ export async function GET(req: NextRequest) {
   }
 }
 const CreateStreamSchema = z.object({
-  userid: z.string(),
   url: z.string(),
 });
 
 export async function POST(req: NextRequest) {
   try {
     await dbconnect();
+    const session = await getServerSession(authOptions);
+    const userid = session?.user.id;
 
     const data = CreateStreamSchema.parse(await req.json());
 
@@ -51,28 +51,26 @@ export async function POST(req: NextRequest) {
     }
     const videoId = ytdl.getURLVideoID(data.url);
     const videoInfo = await ytdl.getBasicInfo(data.url);
-    // console.log(videoInfo.videoDetails.thumbnail);
     const thumb = videoInfo.videoDetails.thumbnails;
     thumb.sort((a, b) => {
       return a.width - b.width && a.height - b.height;
     });
-    // console.log(thumb[thumb.length - 1].url);
 
     await Stream.create({
       extractedid: videoId,
-      userid: data.userid,
+      userid: userid,
       typeofstream: "Youtube",
       url: data.url,
       title: videoInfo.videoDetails.title,
       image: thumb[thumb.length - 1].url,
     });
     await UserModel.findOneAndUpdate(
-      { id: data.userid },
+      { id: userid },
       {
         $push: {
           streams: {
             extractedid: videoId,
-            userid: data.userid,
+            userid: userid,
             typeofstream: "Youtube",
             url: data.url,
             title: videoInfo.videoDetails.title,

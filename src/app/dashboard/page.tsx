@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, Link2, Music2, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -13,34 +13,51 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { IStream } from "@/models/types";
-
+import YouTube, { YouTubeProps } from 'react-youtube';
 
 export default function dashboard() {
-  console.log(useSession());
+  // console.log(useSession());
 
   const { data: session, status } = useSession();
+  const [tracks, setTracks] = React.useState<IStream[]>([]);
+  const [url, setUrl] = useState<string>("");
   const router = useRouter();
-  // console.log(session?.user.id);
-  // if (!session) {
-  //   router.push("/");
-  // }
+
+  const fetchData = async function () {
+    const res = await axios.get(`api/streams?userid=${session?.user.id}`);
+    setTracks(res.data.data);
+    console.log(res.data.data);
+  };
   useEffect(() => {
-    if(status === "authenticated"){
-      // console.log("this is authen",session?.user.id);
-      const fetchData = async function () {
-        const res = await axios.get(`api/streams?userid=${session?.user.id}`);
-        setTracks(res.data);
-        // console.log(tracks);
-        
-      };
+    if (status === "authenticated") {
       fetchData();
     }
   }, [session]);
-  // useEffect(() => {
-    
-  // }, []);
 
-  const [tracks, setTracks] = React.useState<IStream[]>([]);
+  let addURL = async function () {
+    try {
+      let res = await axios.post("/api/streams", { url: url });
+      fetchData();
+
+      console.log("URL added successfully");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onPlayerReady: YouTubeProps['onReady'] = (event) => {
+    // access to player in all event handlers via event.target
+    event.target.pauseVideo();
+  }
+
+  const opts: YouTubeProps['opts'] = {
+    height: '390',
+    width: '640',
+    playerVars: {
+      // https://developers.google.com/youtube/player_parameters
+      autoplay: 1,
+    },
+  };
 
   const handleVote = (id: string, increment: boolean) => {
     setTracks(
@@ -65,10 +82,16 @@ export default function dashboard() {
           <div className="flex-1 flex gap-2">
             <Input
               placeholder="Enter music URL..."
+              id="urlinput"
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") addURL();
+              }}
               className="flex-1 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-400"
             />
             <Button
               variant="secondary"
+              onClick={addURL}
               className="bg-purple-600 hover:bg-purple-700 text-white"
             >
               <Link2 className="h-4 w-4 mr-2" />
@@ -88,6 +111,7 @@ export default function dashboard() {
                   <Play className="h-12 w-12 text-purple-400 mx-auto mb-4" />
                   <p className="text-zinc-400">
                     Music player embed will appear here
+                    <YouTube videoId="FW2XOIxaNqg" opts={opts} onReady={onPlayerReady}></YouTube>
                   </p>
                 </div>
               </div>
