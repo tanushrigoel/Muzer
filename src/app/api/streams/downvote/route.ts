@@ -8,7 +8,6 @@ import { dbconnect } from "@/lib/dbconnect";
 
 const downVoteSchema = z.object({
   streamId: z.string(),
-  userId: z.string(),
 });
 
 export async function POST(req: NextRequest) {
@@ -23,12 +22,9 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
-    const data = downVoteSchema.parse(await req.json());
-    // const upvote = await Upvote.findOne({ userid: data.userId });
-    // const stream = await Stream.findOne({ id: data.streamId });
-
+    const data = await req.json();
     await Upvote.findOneAndDelete({
-      userid: data.userId,
+      userid: session.user.id,
       streamid: data.streamId,
     });
 
@@ -41,37 +37,6 @@ export async function POST(req: NextRequest) {
       { message: "Stream downvoted successfully" },
       { status: 200 }
     );
-
-    // if (upvote) {
-    //   return NextResponse.json(
-    //     {
-    //       message: "User have already voted",
-    //     },
-    //     { status: 401 }
-    //   );
-    // }
-    // if (!stream) {
-    //   return NextResponse.json(
-    //     {
-    //       message: "Stream with the given id doesn't exist",
-    //     },
-    //     { status: 404 }
-    //   );
-    // }
-    // if (stream.upVotes !== undefined) {
-    //   await Upvote.deleteOne({
-    //     $and: [{ userid: data.userId }, { streamid: data.streamId }],
-    //   });
-    //   return NextResponse.json(
-    //     { message: "Downvoted successfully" },
-    //     { status: 200 }
-    //   );
-    // } else {
-    //   return NextResponse.json(
-    //     { error: "Error in downvoting the stream" },
-    //     { status: 411 }
-    //   );
-    // }
   } catch (error) {
     console.log(error);
 

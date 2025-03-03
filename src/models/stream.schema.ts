@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
+
 import { IStream } from "./types";
 
 export const streamSchema = new Schema<IStream>({
@@ -13,7 +13,7 @@ export const streamSchema = new Schema<IStream>({
   },
   id: {
     type: String,
-    default: uuidv4(),
+    required: true,
   },
   upVotes: {
     type: Number,

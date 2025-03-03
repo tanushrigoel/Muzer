@@ -16,10 +16,17 @@ import { motion } from "framer-motion";
 import { ArrowRight, Music2, ThumbsUp, Users } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Page() {
-  const { data: session } = useSession();
-  console.log("app ses", session);
+  const { data: session, status } = useSession();
+  // console.log("app ses", session);
+  useEffect(() => {
+    if (status === "authenticated") {
+      redirect("/dashboard");
+    }
+  }, [session, status]);
 
   return (
     <div className="dark min-h-screen bg-gradient-to-b from-zinc-900 to-black text-zinc-50">

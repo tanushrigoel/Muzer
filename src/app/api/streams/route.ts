@@ -6,7 +6,8 @@ import { Stream } from "@/models/stream.schema";
 import ytdl from "ytdl-core";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
-
+import { Upvote } from "@/models/upvote.schema";
+import { v4 as uuidv4 } from "uuid";
 const getSchema = z.object({
   userid: z.string(),
 });
@@ -57,6 +58,7 @@ export async function POST(req: NextRequest) {
     });
 
     await Stream.create({
+      id: uuidv4(),
       extractedid: videoId,
       userid: userid,
       typeofstream: "Youtube",
@@ -91,6 +93,41 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: "Error while creating a stream" },
       { status: 404 }
+    );
+  }
+}
+
+const deleteVideoSchema = z.object({
+  id: z.string(),
+});
+
+export async function DELETE(req: NextRequest) {
+  const data = await req.json();
+  console.log(data);
+
+  // const data = deleteVideoSchema.parse(reqdata.body);
+  const session = await getServerSession(authOptions);
+  const userid = session?.user.id;
+  try {
+    await Stream.findOneAndDelete({ id: data.id }); // stream delete from streams model
+    await UserModel.findOneAndUpdate(
+      { id: userid },
+      { $pull: { streams: { id: data.id } } }
+    ); // updating user array
+    // await Upvote.findByIdAndDelete({ streamid: data.id }); // deleting all the upvotes of the particular stream
+    return NextResponse.json(
+      {
+        message: "Stream deletion successfully",
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json(
+      {
+        error: "Some error in deleting",
+      },
+      { status: 501 }
     );
   }
 }

@@ -8,7 +8,6 @@ import { dbconnect } from "@/lib/dbconnect";
 
 const upVoteSchema = z.object({
   streamId: z.string(),
-  userId: z.string(),
 });
 
 export async function POST(req: NextRequest) {
@@ -23,20 +22,11 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
-    const data = upVoteSchema.parse(await req.json());
-    // const upvote = await Upvote.findOne({ userid: data.userId });
-    // const stream = await Stream.findOne({ id: data.streamId });
-    // const currUser = await UserModel.findOne({ email: session.user.email });
-    // if (!stream) {
-    //   return NextResponse.json(
-    //     {
-    //       message: "Stream with the given id doesn't exist",
-    //     },
-    //     { status: 404 }
-    //   );
-    // }
+    const data = await req.json();
+    // console.log(data);
+    
     const currUpvote = await Upvote.findOne({
-      userid: data.userId,
+      userid: session.user.id,
       streamid: data.streamId,
     });
     if (currUpvote) {
@@ -47,8 +37,8 @@ export async function POST(req: NextRequest) {
         { status: 401 }
       );
     }
-    const newUpvote = await Upvote.create({
-      userid: data.userId,
+    await Upvote.create({
+      userid: session.user.id,
       streamid: data.streamId,
     });
 

@@ -11,7 +11,7 @@ export interface IStream {
   _id: mongoose.Types.ObjectId;
   typeofstream: string;
   active: Boolean;
-  extractedid?: string;
+  extractedid: string;
   upVotes: number;
   id: string;
   userid: string;
