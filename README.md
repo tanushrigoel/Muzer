@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎵 Muzer
 
-## Getting Started
+![Muzer Banner](https://via.placeholder.com/1000x300?text=Muzer+-+Decide+Your+Music)
 
-First, run the development server:
+**Muzer** is a collaborative music decision-making platform where users can create a space, add YouTube music videos, and let others vote on them. The most upvoted song gets played first! 🚀
 
+## 🔥 Features
+
+- 🎼 **Create a Space** – Start a new music session and invite friends.
+- 📺 **Add YouTube Music** – Queue up your favorite YouTube tracks.
+- 👍 **Upvote Mechanism** – Songs with the most votes play first.
+- 🌎 **Share with Others** – Invite friends to join and vote.
+- 🎨 **Beautiful UI** – Built with Next.js, Tailwind CSS, and ShadCN.
+
+## 📸 Screenshots
+
+Coming soon... 🚀
+
+## 🛠️ Tech Stack
+
+- **Frontend:** Next.js, Tailwind CSS, ShadCN
+- **Backend:** Next.js
+- **Database:** MongoDB
+- **Authentication:** NextAuth.js
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone the Repository
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/muzer.git
+cd muzer
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2️⃣ Install Dependencies
+```bash
+yarn install # or npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3️⃣ Run the Development Server
+```bash
+yarn dev # or npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+🔗 Open [http://localhost:3000](http://localhost:3000) in your browser to see the app in action!
 
-## Learn More
+## 🙌 Contributing
 
-To learn more about Next.js, take a look at the following resources:
+We welcome contributions! Feel free to submit a pull request or create an issue.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📝 License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is licensed under the [MIT License](LICENSE).
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🚀 **Muzer – Because music is better when decided together!** 🎶

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// const MONGODB_URI = process.env.MONGODB_URI!;
+const MONGODB_URI = process.env.MONGODB_URI!;
 // console.log(MONGODB_URI);
 
 // if (MONGODB_URI.length == 0) {
@@ -23,7 +23,7 @@ export async function dbconnect() {
       maxPoolSize: 10,
     };
     cached.promise = mongoose
-      .connect("mongodb+srv://tanushri:tanushri@cluster0.6onwm.mongodb.net/", opts)
+      .connect(MONGODB_URI, opts)
       .then(() => mongoose.connection);
   }
   try {
