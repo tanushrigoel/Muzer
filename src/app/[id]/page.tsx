@@ -4,8 +4,6 @@ import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
-  Link,
-  Link2,
   LogOut,
   Music2,
   Play,
@@ -13,7 +11,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
@@ -22,23 +19,22 @@ import { signOut, useSession } from "next-auth/react";
 import { IStream } from "@/models/types";
 import YouTube, { YouTubeProps } from "react-youtube";
 import { redirect, useParams } from "next/navigation";
-import { toast } from "sonner";
 // thumbnail preview
 // url extracted have to show on frontend
 // have to show the loading state, if there is any error
 
-export default function dashboard() {
+export default function Dashboard() {
   const { data: session, status } = useSession();
   const [tracks, setTracks] = React.useState<IStream[]>([]);
-  const [url, setUrl] = useState<string>("");
+  // const [url, setUrl] = useState<string>("");
   const [currentlyPlaying, setCurrentlyPlaying] = useState<IStream | null>(
     null
   );
   const [queueTracks, setQueueTracks] = useState<IStream[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
   // const [urlValide, setUrlValide] = useState<boolean>(false);
   // const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   const param = useParams<{ id: string }>();
 
@@ -88,9 +84,9 @@ export default function dashboard() {
       redirect("/");
     }
     if (status === "authenticated") {
-      setLoading(true);
+      // setLoading(true);
       fetchData();
-      setLoading(false);
+      // setLoading(false);
     }
   }, [session, status]);
 

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
-  Link,
   Link2,
   LogOut,
   Music2,
@@ -22,13 +21,12 @@ import { signOut, useSession } from "next-auth/react";
 import { IStream } from "@/models/types";
 import YouTube, { YouTubeProps } from "react-youtube";
 import { redirect } from "next/navigation";
-import ytdl from "ytdl-core";
 import { toast } from "sonner";
 // thumbnail preview
 // url extracted have to show on frontend
 // have to show the loading state, if there is any error
 
-export default function dashboard() {
+export default function Dashboard() {
   const { data: session, status } = useSession();
   const [tracks, setTracks] = React.useState<IStream[]>([]);
   const [url, setUrl] = useState<string>("");
@@ -36,10 +34,10 @@ export default function dashboard() {
     null
   );
   const [queueTracks, setQueueTracks] = useState<IStream[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
   // const [urlValide, setUrlValide] = useState<boolean>(false);
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   const fetchData = async function () {
     try {
@@ -87,18 +85,18 @@ export default function dashboard() {
       redirect("/");
     }
     if (status === "authenticated") {
-      setLoading(true);
+      // setLoading(true);
       fetchData();
-      setLoading(false);
+      // setLoading(false);
     }
   }, [session, status]);
 
   const previewThumbnail = async function () {
     if (!matchYoutubeUrl(url)) {
-      setError("Please enter valid youtube URL");
+      // setError("Please enter valid youtube URL");
       return;
     }
-    let yurl = new URL(url);
+    const yurl = new URL(url);
     let youtubeID: string | null;
     if (
       yurl.hostname === "www.youtube.com" ||
@@ -109,20 +107,20 @@ export default function dashboard() {
       youtubeID = getYouTubeIDShortened(url);
     }
     if (youtubeID === null) {
-      setError("Please enter valid youtube URL");
+      // setError("Please enter valid youtube URL");
       return;
     }
 
-    const imageUrl = `https://i.ytimg.com/vi/${youtubeID}/hqdefault.jpg`;
-    setThumbnailUrl(imageUrl);
-    setError(null);
+    // const imageUrl = `https://i.ytimg.com/vi/${youtubeID}/hqdefault.jpg`;
+    // setThumbnailUrl(imageUrl);
+    // setError(null);
   };
   // checking if the url is youtube
   function matchYoutubeUrl(url: string) {
-    let p =
+    const p =
       /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
     if (url !== null) {
-      let ans = url.match(p);
+      const ans = url.match(p);
       if (ans !== null) return true;
     }
     return false;
@@ -138,11 +136,11 @@ export default function dashboard() {
     return match ? match[1] : null;
   }
 
-  let addURL = async function () {
+  const addURL = async function () {
     if (!url.trim()) return;
 
     try {
-      setLoading(true);
+      // setLoading(true);
 
       const promise = axios.post("/api/streams", { url: url });
       toast.promise(promise, {
@@ -154,7 +152,7 @@ export default function dashboard() {
       });
       setUrl(""); // Clear the input
       fetchData();
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
       console.log("Error adding URL:", error);
     }
@@ -171,7 +169,7 @@ export default function dashboard() {
     }
   };
 
-  const onPlayerReady: YouTubeProps["onReady"] = (event) => {
+  const onPlayerReady: YouTubeProps["onReady"] = () => {
     // access to player in all event handlers via event.target
     // event.target.pauseVideo();
   };

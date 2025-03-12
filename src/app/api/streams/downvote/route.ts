@@ -2,13 +2,13 @@ import { Stream } from "@/models/stream.schema";
 import { Upvote } from "@/models/upvote.schema";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { authOptions } from "../../auth/[...nextauth]/route";
+// import { z } from "zod";
+import { authOptions } from "../../auth/[...nextauth]/options";
 import { dbconnect } from "@/lib/dbconnect";
 
-const downVoteSchema = z.object({
-  streamId: z.string(),
-});
+// const downVoteSchema = z.object({
+//   streamId: z.string(),
+// });
 
 export async function POST(req: NextRequest) {
   try {

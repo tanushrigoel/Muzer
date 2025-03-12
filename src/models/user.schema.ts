@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 import { IUser } from "./types"; // Import from new types file
 import { streamSchema } from "./stream.schema"; // Import only after defining the schema

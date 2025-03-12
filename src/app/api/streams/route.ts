@@ -5,12 +5,11 @@ import UserModel from "@/models/user.schema";
 import { Stream } from "@/models/stream.schema";
 import ytdl from "ytdl-core";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
-import { Upvote } from "@/models/upvote.schema";
 import { v4 as uuidv4 } from "uuid";
-const getSchema = z.object({
-  userid: z.string(),
-});
+import { authOptions } from "../auth/[...nextauth]/options";
+// const getSchema = z.object({
+//   userid: z.string(),
+// });
 
 export async function GET(req: NextRequest) {
   try {
@@ -22,6 +21,8 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
+    console.log(error);
+
     return NextResponse.json(
       {
         message: "Error while fetching the streams",
@@ -98,9 +99,9 @@ export async function POST(req: NextRequest) {
   }
 }
 
-const deleteVideoSchema = z.object({
-  id: z.string(),
-});
+// const deleteVideoSchema = z.object({
+//   id: z.string(),
+// });
 
 export async function DELETE(req: NextRequest) {
   const data = await req.json();
