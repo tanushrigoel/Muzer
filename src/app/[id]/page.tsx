@@ -21,8 +21,7 @@ import axios from "axios";
 import { signOut, useSession } from "next-auth/react";
 import { IStream } from "@/models/types";
 import YouTube, { YouTubeProps } from "react-youtube";
-import { redirect } from "next/navigation";
-import ytdl from "ytdl-core";
+import { redirect, useParams } from "next/navigation";
 import { toast } from "sonner";
 // thumbnail preview
 // url extracted have to show on frontend
@@ -38,12 +37,14 @@ export default function dashboard() {
   const [queueTracks, setQueueTracks] = useState<IStream[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   // const [urlValide, setUrlValide] = useState<boolean>(false);
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  // const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const param = useParams<{ id: string }>();
 
   const fetchData = async function () {
     try {
-      const res = await axios.get(`api/streams?userid=${session?.user.id}`);
+      const res = await axios.get(`api/streams?userid=${param.id}`);
       const fetchedTracks = res.data.data;
       if (!currentlyPlaying && fetchedTracks.length > 0) {
         const sortedTracks = [...fetchedTracks].sort(
@@ -92,84 +93,6 @@ export default function dashboard() {
       setLoading(false);
     }
   }, [session, status]);
-
-  const previewThumbnail = async function () {
-    if (!matchYoutubeUrl(url)) {
-      setError("Please enter valid youtube URL");
-      return;
-    }
-    let yurl = new URL(url);
-    let youtubeID: string | null;
-    if (
-      yurl.hostname === "www.youtube.com" ||
-      yurl.hostname === "youtube.com"
-    ) {
-      youtubeID = getYouTubeIDStandard(url);
-    } else {
-      youtubeID = getYouTubeIDShortened(url);
-    }
-    if (youtubeID === null) {
-      setError("Please enter valid youtube URL");
-      return;
-    }
-
-    const imageUrl = `https://i.ytimg.com/vi/${youtubeID}/hqdefault.jpg`;
-    setThumbnailUrl(imageUrl);
-    setError(null);
-  };
-  // checking if the url is youtube
-  function matchYoutubeUrl(url: string) {
-    let p =
-      /^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
-    if (url !== null) {
-      let ans = url.match(p);
-      if (ans !== null) return true;
-    }
-    return false;
-  }
-  // gettting id of long youtube url
-  function getYouTubeIDStandard(url: string) {
-    const match = url.match(/[?&]v=([^&]+)/);
-    return match ? match[1] : null;
-  }
-  // getting id of short youtube url
-  function getYouTubeIDShortened(url: string) {
-    const match = url.match(/youtu\.be\/([^?]+)/);
-    return match ? match[1] : null;
-  }
-
-  let addURL = async function () {
-    if (!url.trim()) return;
-
-    try {
-      setLoading(true);
-
-      const promise = axios.post("/api/streams", { url: url });
-      toast.promise(promise, {
-        loading: "Loading...",
-        success: () => {
-          return "Url added successfully";
-        },
-        error: "Error adding url",
-      });
-      setUrl(""); // Clear the input
-      fetchData();
-      setLoading(false);
-    } catch (error) {
-      console.log("Error adding URL:", error);
-    }
-  };
-  const shareOnClick = async function () {
-    try {
-      await navigator.clipboard.writeText(
-        `http://localhost:3000/${session?.user.id}`
-      );
-      toast.success("Url copied successfully");
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to copy url");
-    }
-  };
 
   const onPlayerReady: YouTubeProps["onReady"] = (event) => {
     // access to player in all event handlers via event.target
@@ -247,43 +170,14 @@ export default function dashboard() {
   return (
     <div className="min-h-screen dark bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900">
       <div className="container mx-auto p-6 space-y-6">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ">
           <div className="flex items-center gap-2">
             <Music2 className="h-6 w-6 text-purple-400" />
             <h1 className="text-2xl font-bold text-white">StreamVibe</h1>
           </div>
-          <div className="flex-1 flex gap-2">
-            <Input
-              placeholder="Enter music URL..."
-              id="urlinput"
-              value={url}
-              onChange={(e) => {
-                setUrl(e.target.value);
-                previewThumbnail();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") addURL();
-              }}
-              className="flex-1 bg-zinc-800/50 border-zinc-700 text-white placeholder:text-zinc-400"
-            />
-            <Button
-              variant="secondary"
-              onClick={addURL}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              <Link2 className="h-4 w-4 mr-2" />
-              Add to Queue
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={shareOnClick}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              <Link2 className="h-4 w-4 mr-2" />
-              Share
-            </Button>
-            <Button onClick={() => signOut()} className="bg-red-600 text-white">
-              <LogOut />
+          <div>
+            <Button className="bg-red-700 text-white" onClick={() => signOut()}>
+              <LogOut /> Logout
             </Button>
           </div>
         </div>

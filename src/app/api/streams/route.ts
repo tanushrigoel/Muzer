@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
   try {
     await dbconnect();
     const data = req.nextUrl.searchParams.get("userid") ?? "";
-    const streams = await Stream.find({ userid: data });
+    const streams = await Stream.find({ userid: data }).sort({ upVotes: -1 });
     return NextResponse.json(
       { message: "Streams of the user fetched successfully", data: streams },
       { status: 200 }
@@ -85,6 +85,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         message: "Stream added successfully",
+        data: thumb[thumb.length - 1].url,
       },
       { status: 200 }
     );

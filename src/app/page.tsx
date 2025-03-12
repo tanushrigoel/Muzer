@@ -1,15 +1,3 @@
-// "use client";
-
-// import Image from "next/image";
-// import AppBar from "@/components/AppBar";
-// export default function Home() {
-//   return (
-//     <div>
-//       <AppBar />
-//     </div>
-//   );
-// }
-
 "use client";
 
 import { motion } from "framer-motion";
@@ -18,12 +6,14 @@ import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 export default function Page() {
   const { data: session, status } = useSession();
   // console.log("app ses", session);
   useEffect(() => {
     if (status === "authenticated") {
+      toast.success("Logged in successfully");
       redirect("/dashboard");
     }
   }, [session, status]);
