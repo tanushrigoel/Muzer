@@ -221,21 +221,15 @@ export default function Dashboard() {
       // Delete the currently playing stream
       await axios.delete(`/api/streams`, { data: { id: currentlyPlaying.id } });
 
-      // Set the highest upvoted track as the next playing track
       if (queueTracks.length > 0) {
-        // queueTracks is already sorted by upvotes
         const nextTrack = queueTracks[0];
         setCurrentlyPlaying(nextTrack);
-
-        // Update the queue tracks
         setQueueTracks(
           queueTracks.filter((track) => track.id !== nextTrack.id)
         );
       } else {
         setCurrentlyPlaying(null);
       }
-
-      // Refresh the data
       fetchData();
     } catch (error) {
       console.log("Error handling end:", error);
