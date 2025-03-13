@@ -206,10 +206,8 @@ export default function Dashboard() {
       } else {
         await axios.post("/api/streams/downvote", { streamId: id });
       }
-      // No need to fetch data again, we've already updated local state
     } catch (error) {
       console.log("Error voting:", error);
-      // Revert the UI changes on error by fetching fresh data
       fetchData();
     }
   };
@@ -217,8 +215,6 @@ export default function Dashboard() {
   const handleEnd = async () => {
     try {
       if (!currentlyPlaying) return;
-
-      // Delete the currently playing stream
       await axios.delete(`/api/streams`, { data: { id: currentlyPlaying.id } });
 
       if (queueTracks.length > 0) {
